@@ -22,7 +22,7 @@ async function initDB() {
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
                 price DECIMAL(10, 2) NOT NULL,
-                image VARCHAR(255),
+                image TEXT,
                 description TEXT DEFAULT 'Delicious food item',
                 category VARCHAR(50) DEFAULT 'General',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

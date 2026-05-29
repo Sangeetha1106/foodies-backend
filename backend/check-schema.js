@@ -1,30 +1,16 @@
-const { Client } = require('pg');
-require('dotenv').config({ path: './.env' });
+require('dotenv').config();
+const db = require('./config/db');
 
 async function checkSchema() {
-    const client = new Client({
-        connectionString: process.env.DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    });
-
     try {
-        await client.connect();
-        console.log("Checking tables...");
-        
-        console.log("\nTesting cart query...");
-        try {
-            const test = await client.query("SELECT food_id FROM cart LIMIT 1");
-            console.log("Cart query successful!");
-        } catch (e) {
-            console.error("Cart query failed:", e.message);
-        }
-
+        const { rows } = await db.query(
+            "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'foods'"
+        );
+        console.log("Foods Table Columns:", rows);
     } catch (err) {
-        console.error(err);
+        console.error("Error checking schema:", err.message);
     } finally {
-        await client.end();
+        process.exit();
     }
 }
 

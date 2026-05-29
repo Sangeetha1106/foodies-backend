@@ -79,7 +79,9 @@ const AdminDashboard = () => {
             setNewFood({ name: '', price: '', image: '', description: '', category: 'General' });
             fetchData();
         } catch (error) {
-            toast.error("Failed to add food");
+            const errorMsg = error.response?.data?.message || "Failed to add food";
+            toast.error(`Error: ${errorMsg}`);
+            console.error("Add food error:", error.response?.data || error);
         }
     };
 
