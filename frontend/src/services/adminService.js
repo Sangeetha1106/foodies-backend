@@ -40,7 +40,7 @@ const getOrders = async (token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(`http://localhost:5000/api/orders`, config);
+    const response = await axios.get(`${API_URL}/orders`, config);
     return response.data;
 };
 

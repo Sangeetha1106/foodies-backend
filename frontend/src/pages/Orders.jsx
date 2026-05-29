@@ -19,12 +19,16 @@ const Orders = () => {
 
     useEffect(() => {
         fetchOrders();
-    }, []);
+
+        const interval = setInterval(fetchOrders, 3000);
+
+        return () => clearInterval(interval);
+    }, [user]);
 
     const fetchOrders = async () => {
         try {
             if (!user) return;
-            const { data } = await API.get(`/orders/my?user_id=${user.id}`);
+            const { data } = await API.get(`/orders/${user.id}`);
             setOrders(data);
         } catch (error) {
             console.error('Error fetching orders:', error);

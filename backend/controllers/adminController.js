@@ -74,7 +74,7 @@ const getOrders = async (req, res) => {
         // Use the specific JOIN query requested by the user
         const query = `
             SELECT orders.id, users.email as user_email, orders.total_price, orders.address, orders.created_at, orders.status,
-                   orders.name as customer_name, foods.name AS food_name, order_items.quantity
+                   orders.name as customer_name, orders.phone, foods.name AS food_name, order_items.quantity
             FROM orders
             JOIN users ON orders.user_id = users.id
             JOIN order_items ON orders.id = order_items.order_id
@@ -93,6 +93,7 @@ const getOrders = async (req, res) => {
                     id: row.id,
                     user_email: row.user_email,
                     name: row.customer_name,
+                    phone: row.phone,
                     total_price: row.total_price,
                     address: row.address,
                     created_at: row.created_at,

@@ -59,10 +59,6 @@ const Menu = ({ searchTerm: propSearchTerm }) => {
     );
 
     const handleBuyNow = (item) => {
-        if (!user) {
-            toast.error("Please login to buy items");
-            return;
-        }
         console.log("[Menu] Buy Now clicked for:", item.name);
         setBuyNowItem(item);
         setShowPopup(true);
@@ -70,66 +66,42 @@ const Menu = ({ searchTerm: propSearchTerm }) => {
 
     const handleOrder = async () => {
         if (!name || !phone || !address) {
-            toast.error("Please fill in all details");
+            alert("Please fill all details");
             return;
         }
 
-        const isCartOrder = !buyNowItem;
-
-        if (isCartOrder && cartItems.length === 0) {
-            toast.error("Your cart is empty");
+        if (phone.length !== 10) {
+            alert("Enter valid phone number");
             return;
         }
 
-        try {
-            let orderItems = [];
-            let total_price = 0;
+        const total = buyNowItem ? Number(buyNowItem.price) + 40 : 0;
 
-            if (buyNowItem) {
-                // Buy Now Flow
-                orderItems = [{
-                    food_id: buyNowItem.id,
-                    quantity: 1,
-                    price: buyNowItem.price
-                }];
-                total_price = Number(buyNowItem.price) + 40; // Standard delivery fee
-            } else {
-                // Cart Flow
-                orderItems = cartItems.map(item => ({
-                    food_id: item.food_id,
-                    quantity: item.quantity,
-                    price: item.price
-                }));
-                total_price = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0) + 40;
-            }
-
-            const orderData = {
-                user_id: user.id,
-                name,
-                phone,
-                address,
-                items: orderItems,
-                total_price,
-            };
-
-            console.log("[Menu] Placing order with data:", orderData);
-            const response = await API.post('/orders', orderData);
-            console.log("[Menu] Order Response:", response.data);
-
-            toast.success("Order placed successfully!");
-            alert("Order placed successfully"); // Explicit alert as requested
+        axios.post("http://localhost:5000/api/orders", {
+            user_id: 1,
+            total_price: total,
+            address: address,
+            name: name,
+            phone: phone,
+            items: [{
+                food_id: buyNowItem.id,
+                quantity: 1,
+                price: buyNowItem.price
+            }]
+        })
+        .then(res => {
+            alert("Order placed successfully");
             setShowPopup(false);
             setBuyNowItem(null);
-            fetchCart(); // Clear cart in state
-
             // Reset form
             setName("");
             setPhone("");
             setAddress("");
-        } catch (error) {
-            console.error("[Menu] Order error:", error);
-            toast.error(error.response?.data?.message || "Order failed. Please try again.");
-        }
+        })
+        .catch(err => {
+            console.log(err.response?.data || err);
+            alert("Order failed");
+        });
     };
 
     if (loading) return <div className="container centered"><h2>Loading delicious food...</h2></div>;

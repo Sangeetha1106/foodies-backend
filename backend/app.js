@@ -41,8 +41,6 @@ app.use('/images', express.static(path.join(__dirname, 'public', 'images')));
 
 
 
-const db = require('./config/db');
-
 // Update Routes
 console.log('Registering routes...');
 app.use('/api/auth', authRoutes);
