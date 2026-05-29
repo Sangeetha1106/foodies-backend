@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/admin';
+const API_URL = 'https://foodies-backend-lich.onrender.com/api/admin';
 
 const adminLogin = async (adminData) => {
-    const response = await axios.post("http://localhost:5000/api/admin/login", adminData);
+    const response = await axios.post("https://foodies-backend-lich.onrender.com/api/admin/login", adminData);
     if (response.data) {
         localStorage.setItem('admin', JSON.stringify(response.data));
     }

@@ -18,7 +18,7 @@ const Cart = () => {
     const getFoodImage = (imagePath) => {
         if (!imagePath) return "https://via.placeholder.com/150";
         if (imagePath.startsWith('http')) return imagePath;
-        return `http://localhost:5000/images/${imagePath}`;
+        return `https://foodies-backend-lich.onrender.com/images/${imagePath}`;
     };
 
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
