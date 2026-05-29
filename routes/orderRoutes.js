@@ -1,7 +1,7 @@
 const express = require('express');
 const { getUserOrders, updateOrderStatus, getOrders } = require('../controllers/orderController');
 const { protect } = require('../middleware/authMiddleware');
-const { pool } = require('../config/db');
+const pool = require('../config/db');
 
 const router = express.Router();
 

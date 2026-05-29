@@ -12,7 +12,7 @@ const getFoods = async (req, res) => {
         // Map images to full URLs
         const foodsWithImages = foods.rows.map(food => ({
             ...food,
-            image: `http://localhost:5000/images/${food.image}`
+            image: `${baseUrl}/images/${food.image}`
         }));
 
         res.json(foodsWithImages);

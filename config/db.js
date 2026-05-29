@@ -1,28 +1,21 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+const { Pool } = require("pg");
+
+console.log("DATABASE_URL =", process.env.DATABASE_URL);
 
 const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
-// Explicitly test connectivity
-const connectDB = async () => {
-    try {
-        const client = await pool.connect();
-        console.log("Database connected successfully");
-        client.release();
-    } catch (error) {
-        console.error("Database connection failed:", error.message);
-        process.exit(1);
-    }
-};
+pool.connect((err) => {
+  if (err) {
+    console.error("REAL DATABASE ERROR:", err.message);
+    process.exit(1);
+  } else {
+    console.log("Database connected successfully");
+  }
+});
 
-module.exports = {
-    query: (text, params) => pool.query(text, params),
-    pool,
-    connectDB
-};
+module.exports = pool;

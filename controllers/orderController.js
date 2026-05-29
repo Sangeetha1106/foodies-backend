@@ -2,7 +2,7 @@ const db = require('../config/db');
 
 // Place order
 const placeOrder = async (req, res) => {
-    const client = await db.pool.connect();
+    const client = await db.connect();
     try {
         console.log("ORDER BODY:", req.body);
         const { user_id, total_price, address, name, phone, items } = req.body;
