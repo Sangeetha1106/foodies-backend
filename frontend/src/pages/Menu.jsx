@@ -22,7 +22,7 @@ const Menu = ({ searchTerm: propSearchTerm }) => {
     const { cartItems, fetchCart, addToCart: cartAddToCart } = useCart(); // Destructure addToCart
 
     const handleAddToCart = (item) => {
-        axios.post("https://foodies-backend-lich.onrender.com/api/cart", {
+        axios.post(`${import.meta.env.VITE_API_URL}/api/cart`, {
             user_id: 1, // TEMP HARDCODE AS REQUESTED
             food_id: item.id,
             quantity: 1
@@ -77,7 +77,7 @@ const Menu = ({ searchTerm: propSearchTerm }) => {
 
         const total = buyNowItem ? Number(buyNowItem.price) + 40 : 0;
 
-        axios.post("https://foodies-backend-lich.onrender.com/api/orders", {
+        axios.post(`${import.meta.env.VITE_API_URL}/api/orders`, {
             user_id: 1,
             total_price: total,
             address: address,
@@ -115,17 +115,24 @@ const Menu = ({ searchTerm: propSearchTerm }) => {
 
             <div className="menu-grid">
                 {filteredItems.map((item) => {
-                    // Debugging image URL
-                    console.log('Food Item:', item.name, 'Image URL:', item.image);
+                    // Debug: log full item to inspect the image field name/value from API
+                    console.log('[Menu] Food item from API:', item);
+
+                    // Resolve image URL — guard against null/undefined coerced to string
+                    const FALLBACK_IMAGE = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f3f4f6'/%3E%3Ctext x='150' y='90' font-family='Arial' font-size='48' text-anchor='middle' fill='%23d1d5db'%3E🍽️%3C/text%3E%3Ctext x='150' y='135' font-family='Arial' font-size='14' text-anchor='middle' fill='%239ca3af'%3ENo Image%3C/text%3E%3C/svg%3E`;
+                    const imgSrc = item.image && item.image !== 'null' && item.image !== 'undefined'
+                        ? item.image
+                        : FALLBACK_IMAGE;
 
                     return (
                         <div className="food-card card" key={item.id}>
                             <div className="food-image">
                                 <img
-                                    src={item.image}
+                                    src={imgSrc}
                                     alt={item.name}
                                     onError={(e) => {
-                                        e.target.src = "https://via.placeholder.com/150";
+                                        e.target.onerror = null; // prevent infinite loop
+                                        e.target.src = FALLBACK_IMAGE;
                                     }}
                                 />
                                 <div className="food-category">{item.category || 'General'}</div>

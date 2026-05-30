@@ -21,6 +21,7 @@ const AdminDashboard = () => {
         description: '',
         category: 'General'
     });
+    const [imagePreviewError, setImagePreviewError] = useState(false);
 
     const admin = JSON.parse(localStorage.getItem('admin'));
 
@@ -73,10 +74,19 @@ const AdminDashboard = () => {
 
     const handleAddFood = async (e) => {
         e.preventDefault();
+
+        // Validate image URL is a proper public URL in production
+        const img = newFood.image.trim();
+        if (img && !img.startsWith('http://') && !img.startsWith('https://')) {
+            toast.error('Image must be a full public URL starting with https://');
+            return;
+        }
+
         try {
-            await adminService.addFood(newFood, admin.token);
-            toast.success("Food added successfully");
+            await adminService.addFood({ ...newFood, image: img }, admin.token);
+            toast.success("Food added successfully! It will appear on the Menu page immediately.");
             setNewFood({ name: '', price: '', image: '', description: '', category: 'General' });
+            setImagePreviewError(false);
             fetchData();
         } catch (error) {
             const errorMsg = error.response?.data?.message || "Failed to add food";
@@ -157,12 +167,33 @@ const AdminDashboard = () => {
                                         required
                                     />
                                     <input 
-                                        type="text" 
-                                        placeholder="Image URL" 
+                                        type="url" 
+                                        placeholder="Full Image URL (https://i.imgur.com/... or any public URL)" 
                                         value={newFood.image}
-                                        onChange={(e) => setNewFood({...newFood, image: e.target.value})}
+                                        onChange={(e) => {
+                                            setNewFood({...newFood, image: e.target.value});
+                                            setImagePreviewError(false);
+                                        }}
                                         required
                                     />
+                                    {/* Live image preview so admin can verify URL before saving */}
+                                    {newFood.image && (
+                                        <div style={{ margin: '8px 0', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                            {imagePreviewError ? (
+                                                <div style={{ padding: '12px', background: 'rgba(239,68,68,0.15)', color: '#f87171', fontSize: '13px', borderRadius: '8px' }}>
+                                                    ⚠️ Cannot load image from this URL. Make sure it's a direct public image link.
+                                                </div>
+                                            ) : (
+                                                <img
+                                                    src={newFood.image}
+                                                    alt="Preview"
+                                                    style={{ width: '100%', height: '120px', objectFit: 'cover', display: 'block' }}
+                                                    onError={() => setImagePreviewError(true)}
+                                                    onLoad={() => setImagePreviewError(false)}
+                                                />
+                                            )}
+                                        </div>
+                                    )}
                                     <input 
                                         type="text" 
                                         placeholder="Category" 

@@ -37,7 +37,13 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/images', express.static(path.join(__dirname, 'public', 'images')));
+// Serve food images — set CORS headers so the Vercel frontend can load images
+// from the Render backend without browser cross-origin blocks
+app.use('/images', (req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // cache 1 day
+    next();
+}, express.static(path.join(__dirname, 'public', 'images')));
 
 
 
